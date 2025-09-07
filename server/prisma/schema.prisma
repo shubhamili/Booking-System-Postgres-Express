@@ -13,3 +13,101 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Theatre {
+  id        Int      @id @default(autoincrement())
+  name      String
+  location  String
+  createdAt DateTime @default(now())
+  screens   Screen[]
+}
+
+model Screen {
+  id        Int      @id @default(autoincrement())
+  theatre   Theatre  @relation(fields: [theatreId], references: [id])
+  theatreId Int
+  shows     Show[]
+  seats     Seat[]
+  createdAt DateTime @default(now())
+}
+
+model Show {
+  id        Int       @id @default(autoincrement())
+  screen    Screen    @relation(fields: [screenId], references: [id])
+  screenId  Int
+  movie     Movie     @relation(fields: [movieId], references: [id])
+  movieId   Int
+  prices    Price[]
+  format    String // e.g., 2D, 3D, IMAX
+  startTime DateTime
+  endTime   DateTime
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+}
+
+model Seat {
+  id         Int       @id @default(autoincrement())
+  row        String
+  number     Int
+  seatType   SeatType  @relation(fields: [seatTypeId], references: [id])
+  seatTypeId Int
+  screen     Screen    @relation(fields: [screenId], references: [id])
+  screenId   Int
+  booking    Booking[]
+}
+
+model SeatType {
+  id     Int     @id @default(autoincrement())
+  name   String // Silver, Gold, VIP, etc.
+  seats  Seat[]
+  prices Price[]
+}
+
+model Movie {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  duration    Int
+  type        String
+  language    String
+  genre       String?
+  rating      Float?
+  imageUrl    String?
+  trailerUrl  String?
+  releaseDate DateTime
+  currency    String   @default("INR")
+  cast        String[] @default([])
+  crew        String[] @default([])
+  createdAt   DateTime @default(now())
+  shows       Show[]
+}
+
+model Price {
+  id         Int      @id @default(autoincrement())
+  show       Show     @relation(fields: [showId], references: [id])
+  showId     Int
+  seatType   SeatType @relation(fields: [seatTypeId], references: [id])
+  seatTypeId Int
+
+  dayType  String // Weekday, Weekend (optional)
+  price    Int
+  currency String @default("INR")
+}
+
+model Booking {
+  id        Int      @id @default(autoincrement())
+  show      Show     @relation(fields: [showId], references: [id])
+  showId    Int
+  seat      Seat     @relation(fields: [seatId], references: [id])
+  seatId    Int
+  status    String   @default("BOOKED")
+  createdAt DateTime @default(now())
+}
