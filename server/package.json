@@ -1,33 +1,29 @@
 {
-  "name": "booking-system",
+  "name": "server",
   "version": "1.0.0",
-  "description": "more then mern",
-  "homepage": "https://github.com/shubhamili/Booking-System#readme",
-  "bugs": {
-    "url": "https://github.com/shubhamili/Booking-System/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/shubhamili/Booking-System.git"
-  },
-  "license": "ISC",
-  "author": "shubham singh",
-  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "@prisma/client": "^6.15.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
-    "express": "^5.1.0"
-  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "description": "",
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "@types/node": "^24.3.1",
-    "prisma": "^6.15.0",
+    "@types/node": "^24.4.0",
+    "eslint": "^9.35.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "prisma": "^6.16.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.0",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0"
   }
 }
