@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { httpStatusCode } from "../utils/httpStatusCode.js";
 import { prismaClient } from "../index.js";
 import { compare, hash } from "bcrypt";
-import { createToken } from "../utils/token.js";
+import { createToken } from "../middleware/token.js";
 import config from "../config/config.js";
 
 

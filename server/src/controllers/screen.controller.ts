@@ -43,3 +43,42 @@ export const addScreen = async (req: Request, res: Response) => {
 }
 
 
+export const deleteScreen = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!id || isNaN(Number(id))) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "Valid Screen ID is required",
+            });
+        }
+
+        const screen = await prismaClient.screen.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (!screen) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "Screen not found",
+            });
+        }
+
+        await prismaClient.screen.delete({
+            where: { id: Number(id) },
+        });
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: "Screen deleted successfully",
+        });
+
+    } catch (error: any) {
+        console.error("Error deleting screen:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            error: error.message || "Internal Server Error",
+        });
+    }
+};

@@ -1,4 +1,3 @@
-
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -32,7 +31,7 @@ model Theatre {
 
 model Screen {
   id        Int      @id @default(autoincrement())
-  theatre   Theatre  @relation(fields: [theatreId], references: [id])
+  theatre   Theatre  @relation(fields: [theatreId], references: [id], onDelete: Restrict)
   theatreId Int
   shows     Show[]
   seats     Seat[]
@@ -41,9 +40,9 @@ model Screen {
 
 model Show {
   id        Int       @id @default(autoincrement())
-  screen    Screen    @relation(fields: [screenId], references: [id])
+  screen    Screen    @relation(fields: [screenId], references: [id], onDelete: Restrict)
   screenId  Int
-  movie     Movie     @relation(fields: [movieId], references: [id])
+  movie     Movie     @relation(fields: [movieId], references: [id], onDelete: Restrict)
   movieId   Int
   prices    Price[]
   format    String // e.g., 2D, 3D, IMAX
@@ -57,9 +56,9 @@ model Seat {
   id         Int       @id @default(autoincrement())
   row        String
   number     Int
-  seatType   SeatType  @relation(fields: [seatTypeId], references: [id])
+  seatType   SeatType  @relation(fields: [seatTypeId], references: [id], onDelete: Restrict)
   seatTypeId Int
-  screen     Screen    @relation(fields: [screenId], references: [id])
+  screen     Screen    @relation(fields: [screenId], references: [id], onDelete: Restrict)
   screenId   Int
   booking    Booking[]
 }
@@ -92,9 +91,9 @@ model Movie {
 
 model Price {
   id         Int      @id @default(autoincrement())
-  show       Show     @relation(fields: [showId], references: [id])
+  show       Show     @relation(fields: [showId], references: [id], onDelete: Restrict)
   showId     Int
-  seatType   SeatType @relation(fields: [seatTypeId], references: [id])
+  seatType   SeatType @relation(fields: [seatTypeId], references: [id], onDelete: Restrict)
   seatTypeId Int
 
   dayType  String // Weekday, Weekend (optional)
@@ -104,9 +103,9 @@ model Price {
 
 model Booking {
   id        Int      @id @default(autoincrement())
-  show      Show     @relation(fields: [showId], references: [id])
+  show      Show     @relation(fields: [showId], references: [id], onDelete: Restrict)
   showId    Int
-  seat      Seat     @relation(fields: [seatId], references: [id])
+  seat      Seat     @relation(fields: [seatId], references: [id], onDelete: Restrict)
   seatId    Int
   status    String   @default("BOOKED")
   createdAt DateTime @default(now())

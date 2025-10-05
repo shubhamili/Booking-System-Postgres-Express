@@ -75,3 +75,54 @@ export const createPrice = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const deletePrice = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "id is required"
+            })
+        }
+
+        const findIfExist = await prismaClient.price.findUnique({
+            where: { id: Number(id) }
+        })
+
+        if (!findIfExist) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "the price dont exist"
+            })
+        }
+
+        const deletePrice = await prismaClient.price.delete({
+            where: { id: Number(id) }
+        })
+
+        if (!deletePrice) {
+            return res.status(httpStatusCode["FORBIDDEN"]).json({
+                success: false,
+                message: "failed to delete the price"
+            })
+        }
+
+
+        return res.status(httpStatusCode.ACCEPTED).json({
+            success: false,
+            message: "deleted price successfully",
+            data: deletePrice
+        })
+
+    } catch (error: any) {
+        console.error("Error deleting price:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            message: "Server error while deleting price",
+            error: error.message,
+        });
+
+    }
+}

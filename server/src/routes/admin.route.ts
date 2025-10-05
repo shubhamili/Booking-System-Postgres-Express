@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { addAdmin } from "../controllers/admin.controller.js";
-import { verifyToken } from "../utils/token.js";
+import { verifyToken } from "../middleware/token.js";
 
 
 const adminRoutes: Router = Router();

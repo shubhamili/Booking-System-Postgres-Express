@@ -90,3 +90,44 @@ export const createShow = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+export const deleteShow = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!id || isNaN(Number(id))) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "Valid Show ID is required",
+            });
+        }
+
+        const show = await prismaClient.show.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (!show) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "Show not found",
+            });
+        }
+
+        await prismaClient.show.delete({
+            where: { id: Number(id) },
+        });
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: "Show deleted successfully",
+        });
+
+    } catch (error: any) {
+        console.error("Error deleting show:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            error: error.message || "Internal Server Error",
+        });
+    }
+};

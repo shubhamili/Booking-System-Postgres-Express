@@ -7,9 +7,6 @@ import cookieParser from 'cookie-parser'
 const app: Express = express()
 
 app.get("/", (req: Request, res: Response) => {
-    // const users = await prisma.user.findMany();
-    // console.log(users);
-
     res.send("app started")
 })
 
@@ -20,6 +17,7 @@ app.use(express.urlencoded({ extended: true }))
 
 // app.use('/api/admin', adminRoutes)
 app.use('/api', rootRouter);
+
 export const prismaClient = new PrismaClient({ log: ['query'] })
 
 app.listen(config.port, () => console.log(`server started at port http://localhost:${config.port}`))

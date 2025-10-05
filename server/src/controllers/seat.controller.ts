@@ -88,3 +88,44 @@ export const createSeat = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+export const deleteSeat = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!id || isNaN(Number(id))) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "Valid Seat ID is required",
+            });
+        }
+
+        const seat = await prismaClient.seat.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (!seat) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "Seat not found",
+            });
+        }
+
+        await prismaClient.seat.delete({
+            where: { id: Number(id) },
+        });
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: "Seat deleted successfully",
+        });
+
+    } catch (error: any) {
+        console.error("Error deleting seat:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            error: error.message || "Internal Server Error",
+        });
+    }
+};

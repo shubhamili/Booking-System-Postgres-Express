@@ -35,3 +35,44 @@ export const addtheatre = async (req: Request, res: Response) => {
         })
     }
 }
+
+
+export const deleteTheatre = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!id || isNaN(Number(id))) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "Valid Theatre ID is required",
+            });
+        }
+
+        const theatre = await prismaClient.theatre.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (!theatre) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "Theatre not found",
+            });
+        }
+
+        await prismaClient.theatre.delete({
+            where: { id: Number(id) },
+        });
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: "Theatre deleted successfully",
+        });
+
+    } catch (error: any) {
+        console.error("Error deleting theatre:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            error: error.message || "Internal Server Error",
+        });
+    }
+};
