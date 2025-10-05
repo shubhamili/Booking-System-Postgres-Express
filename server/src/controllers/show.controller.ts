@@ -1,0 +1,92 @@
+import type { Request, Response } from "express";
+import { prismaClient } from "../index.js";
+import { httpStatusCode } from "../utils/httpStatusCode.js";
+
+export const createShow = async (req: Request, res: Response) => {
+    try {
+        const { screenId, movieId, format, startTime, endTime } = req.body;
+
+        // Basic validations
+        if (!screenId || !movieId || !format || !startTime || !endTime) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "All fields (screenId, movieId, format, startTime, endTime) are required",
+            });
+        }
+
+        const screenIdNum = Number(screenId);
+        const movieIdNum = Number(movieId);
+
+        if (isNaN(screenIdNum) || isNaN(movieIdNum)) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "Invalid screenId or movieId format",
+            });
+        }
+
+        // Check if screen exists
+        const screen = await prismaClient.screen.findUnique({ where: { id: screenIdNum } });
+        if (!screen) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "Screen not found",
+            });
+        }
+
+        // Check if movie exists
+        const movie = await prismaClient.movie.findUnique({ where: { id: movieIdNum } });
+        if (!movie) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "Movie not found",
+            });
+        }
+
+        const conflict = await prismaClient.show.findFirst({
+            where: {
+                screenId: screenIdNum,
+                OR: [
+                    {
+                        startTime: { lte: new Date(endTime) },
+                        endTime: { gte: new Date(startTime) },
+                    },
+                ],
+            },
+        });
+
+        if (conflict) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "Time conflict — another show is already scheduled on this screen at that time",
+            });
+        }
+
+        // Create show
+        const newShow = await prismaClient.show.create({
+            data: {
+                screenId: screenIdNum,
+                movieId: movieIdNum,
+                format,
+                startTime: new Date(startTime),
+                endTime: new Date(endTime),
+            },
+            include: {
+                screen: true,
+                movie: true,
+            },
+        });
+
+        return res.status(httpStatusCode.CREATED).json({
+            success: true,
+            message: "Show created successfully",
+            data: newShow,
+        });
+
+    } catch (error: any) {
+        console.error("Error creating show:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            message: error.message || "Server error while creating show",
+        });
+    }
+};
