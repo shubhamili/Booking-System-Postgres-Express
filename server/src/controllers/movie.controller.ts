@@ -12,11 +12,13 @@ export const addMovie = async (req: Request, res: Response) => {
             language,
             genre,
             rating,
-            imageUrl,
+            // poster,
             trailerUrl,
             releaseDate,
             currency
         } = req.body;
+
+        const poster = req.file?.filename || "";
 
         if (!title || !duration || !type || !language || !releaseDate) {
             return res.status(httpStatusCode["BAD REQUEST"]).json({
@@ -44,7 +46,7 @@ export const addMovie = async (req: Request, res: Response) => {
                 language,
                 genre,
                 rating: rating ? Number(rating) : null,
-                imageUrl,
+                poster,
                 trailerUrl,
                 releaseDate: releaseDateValidatedObj,
                 currency: currency || "INR",
@@ -87,11 +89,13 @@ export const editMovie = async (req: Request, res: Response) => {
             language,
             genre,
             rating,
-            imageUrl,
+          
             trailerUrl,
             releaseDate,
             currency,
         } = req.body;
+
+        const poster = req.file?.filename;
 
         if (!movieId) {
             return res.status(httpStatusCode["BAD REQUEST"]).json({
@@ -121,7 +125,7 @@ export const editMovie = async (req: Request, res: Response) => {
                 language: language ?? existingMovie.language,
                 genre: genre ?? existingMovie.genre,
                 rating: rating !== undefined ? Number(rating) : existingMovie.rating,
-                imageUrl: imageUrl ?? existingMovie.imageUrl,
+                poster: poster ?? existingMovie.poster,
                 trailerUrl: trailerUrl ?? existingMovie.trailerUrl,
                 releaseDate: releaseDate ? new Date(releaseDate) : existingMovie.releaseDate,
                 currency: currency ?? existingMovie.currency,

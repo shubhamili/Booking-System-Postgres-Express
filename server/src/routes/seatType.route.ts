@@ -5,7 +5,6 @@ import { addSeatType, deleteSeatType } from "../controllers/seatType.controller.
 const seatTypeRoute: Router = Router();
 
 seatTypeRoute.post('/add', verifyToken, addSeatType);
-seatTypeRoute.delete('/delete', verifyToken, deleteSeatType);
-
+seatTypeRoute.delete('/delete/:id', verifyToken, deleteSeatType);
 
 export default seatTypeRoute;

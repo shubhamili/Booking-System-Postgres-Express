@@ -7,12 +7,15 @@ export const createShow = async (req: Request, res: Response) => {
         const { screenId, movieId, format, startTime, endTime } = req.body;
 
         // Basic validations
-        if (!screenId || !movieId || !format || !startTime || !endTime) {
+        const requiredFields = [screenId, movieId, format, startTime, endTime];
+
+        if (!requiredFields.every(Boolean)) {
             return res.status(httpStatusCode["BAD REQUEST"]).json({
                 success: false,
                 message: "All fields (screenId, movieId, format, startTime, endTime) are required",
             });
         }
+
 
         const screenIdNum = Number(screenId);
         const movieIdNum = Number(movieId);

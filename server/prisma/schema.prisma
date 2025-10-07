@@ -79,7 +79,7 @@ model Movie {
   language    String
   genre       String?
   rating      Float?
-  imageUrl    String?
+  poster      String?
   trailerUrl  String?
   releaseDate DateTime
   currency    String   @default("INR")
