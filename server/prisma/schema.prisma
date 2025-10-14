@@ -101,12 +101,47 @@ model Price {
   currency String @default("INR")
 }
 
-model Booking {
-  id        Int      @id @default(autoincrement())
-  show      Show     @relation(fields: [showId], references: [id], onDelete: Restrict)
-  showId    Int
-  seat      Seat     @relation(fields: [seatId], references: [id], onDelete: Restrict)
+model BookingSeat {
+  id        Int     @id @default(autoincrement())
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId Int
   seatId    Int
-  status    String   @default("BOOKED")
+  price     Int
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?  @unique
+  role      String   @default("USER") // USER | ADMIN (optional)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  bookings Booking[]
+}
+
+model Booking {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  show   Show @relation(fields: [showId], references: [id], onDelete: Restrict)
+  showId Int
+
+ 
+  bookingSeats BookingSeat[]
+
+  totalAmount  Int
+
+  amountPaid    Int
+  paymentStatus String @default("PENDING") // PENDING | SUCCESS | FAILED
+  bookingStatus String @default("PENDING") // PENDING | BOOKED | CANCELLED | EXPIRED
+
+  bookedAt  DateTime? // Set when confirmed
+  expiresAt DateTime? // Optional: if using temporary lock
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
