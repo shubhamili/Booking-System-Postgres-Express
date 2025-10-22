@@ -4,6 +4,19 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum BookingStatus {
+  PENDING // locked / awaiting payment
+  BOOKED
+  CANCELLED
+  EXPIRED
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -39,28 +52,32 @@ model Screen {
 }
 
 model Show {
-  id        Int       @id @default(autoincrement())
-  screen    Screen    @relation(fields: [screenId], references: [id], onDelete: Restrict)
-  screenId  Int
-  movie     Movie     @relation(fields: [movieId], references: [id], onDelete: Restrict)
-  movieId   Int
-  prices    Price[]
-  format    String // e.g., 2D, 3D, IMAX
-  startTime DateTime
-  endTime   DateTime
-  bookings  Booking[]
-  createdAt DateTime  @default(now())
+  id           Int           @id @default(autoincrement())
+  screen       Screen        @relation(fields: [screenId], references: [id], onDelete: Restrict)
+  screenId     Int
+  movie        Movie         @relation(fields: [movieId], references: [id], onDelete: Restrict)
+  movieId      Int
+  prices       Price[]
+  format       String // e.g., 2D, 3D, IMAX
+  startTime    DateTime
+  endTime      DateTime
+  bookings     Booking[]
+  bookingSeats BookingSeat[]
+  createdAt    DateTime      @default(now())
 }
 
 model Seat {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   row        String
   number     Int
-  seatType   SeatType  @relation(fields: [seatTypeId], references: [id], onDelete: Restrict)
+  seatType   SeatType @relation(fields: [seatTypeId], references: [id], onDelete: Restrict)
   seatTypeId Int
-  screen     Screen    @relation(fields: [screenId], references: [id], onDelete: Restrict)
+  screen     Screen   @relation(fields: [screenId], references: [id], onDelete: Restrict)
   screenId   Int
-  booking    Booking[]
+
+  bookingSeats BookingSeat[]
+
+  @@unique([screenId, row, number]) // unique seat per screen
 }
 
 model SeatType {
@@ -102,11 +119,18 @@ model Price {
 }
 
 model BookingSeat {
-  id        Int     @id @default(autoincrement())
-  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  id Int @id @default(autoincrement())
+
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
   bookingId Int
-  seatId    Int
-  price     Int
+
+  Seat   Seat @relation(fields: [seatId], references: [id])
+  seatId Int
+
+  show   Show @relation(fields: [showId], references: [id], onDelete: Restrict)
+  showId Int
+
+  price Int
 }
 
 model User {
@@ -115,7 +139,6 @@ model User {
   email     String   @unique
   password  String
   phone     String?  @unique
-  role      String   @default("USER") // USER | ADMIN (optional)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -131,12 +154,10 @@ model Booking {
   show   Show @relation(fields: [showId], references: [id], onDelete: Restrict)
   showId Int
 
- 
   bookingSeats BookingSeat[]
 
-  totalAmount  Int
-
-  amountPaid    Int
+  totalAmount   Int
+  paymentId     Int
   paymentStatus String @default("PENDING") // PENDING | SUCCESS | FAILED
   bookingStatus String @default("PENDING") // PENDING | BOOKED | CANCELLED | EXPIRED
 
