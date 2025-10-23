@@ -129,3 +129,13 @@ export const deleteSeat = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+//show availability (join seats vs bookingSeats where bookingStatus = BOOKED or PENDING)
+export const showSeats = async (req: Request, res: Response) => {
+    try {
+
+    } catch (error) {
+
+    }
+}

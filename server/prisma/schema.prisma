@@ -11,7 +11,7 @@ enum PaymentStatus {
 }
 
 enum BookingStatus {
-  PENDING // locked / awaiting payment
+  PENDING
   BOOKED
   CANCELLED
   EXPIRED
@@ -124,13 +124,15 @@ model BookingSeat {
   booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
   bookingId Int
 
-  Seat   Seat @relation(fields: [seatId], references: [id])
+  seat   Seat @relation(fields: [seatId], references: [id])
   seatId Int
 
   show   Show @relation(fields: [showId], references: [id], onDelete: Restrict)
   showId Int
 
   price Int
+
+  @@unique([seatId, showId])
 }
 
 model User {
@@ -154,15 +156,15 @@ model Booking {
   show   Show @relation(fields: [showId], references: [id], onDelete: Restrict)
   showId Int
 
-  bookingSeats BookingSeat[]
-
   totalAmount   Int
-  paymentId     Int
-  paymentStatus String @default("PENDING") // PENDING | SUCCESS | FAILED
-  bookingStatus String @default("PENDING") // PENDING | BOOKED | CANCELLED | EXPIRED
+  paymentId     String?
+  paymentStatus PaymentStatus @default(PENDING)
+  bookingStatus BookingStatus @default(PENDING)
 
   bookedAt  DateTime? // Set when confirmed
   expiresAt DateTime? // Optional: if using temporary lock
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  bookingSeats BookingSeat[]
 }
