@@ -134,3 +134,43 @@ export const deleteShow = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+
+
+export const showsDisplay = async (req: Request, res: Response) => {
+    try {
+        const shows = await prismaClient.show.findMany({
+            include: {
+                screen: true,
+                movie: true,
+            }
+        })
+
+
+        if (shows.length === 0) {
+            return res.status(httpStatusCode["NO CONTENT"]).json({
+                success: false,
+                message: 'displaying all shows',
+                data: shows
+            });
+        }
+
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: 'displaying all shows',
+            data: shows
+        });
+
+
+
+    } catch (error: any) {
+        console.error("Error displaying show:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            error: error.message || "Internal Server Error",
+        });
+
+    }
+}

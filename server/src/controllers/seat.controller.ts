@@ -135,7 +135,26 @@ export const deleteSeat = async (req: Request, res: Response) => {
 export const showSeats = async (req: Request, res: Response) => {
     try {
 
-    } catch (error) {
+        const seats = await prismaClient.seat.findMany({
+            orderBy: { id: "asc" },
+            include: {
+                seatType: true
+            }
+        });
+        console.log("seats all => ", seats);
 
+        return res.status(httpStatusCode.ACCEPTED).json(
+            {
+                succes: true,
+                message: "find all the seats here..",
+                seats
+
+            })
+    } catch (error: any) {
+        console.error("error in show seats :", error)
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            message: `error in seat show ${error.message}.`
+        })
     }
 }
