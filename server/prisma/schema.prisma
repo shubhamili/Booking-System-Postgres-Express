@@ -108,8 +108,10 @@ model Movie {
 
 model Price {
   id         Int      @id @default(autoincrement())
+
   show       Show     @relation(fields: [showId], references: [id], onDelete: Restrict)
   showId     Int
+  
   seatType   SeatType @relation(fields: [seatTypeId], references: [id], onDelete: Restrict)
   seatTypeId Int
 

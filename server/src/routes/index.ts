@@ -8,6 +8,7 @@ import screenRoute from "./screen.route.js";
 import seatTypeRoute from "./seatType.route.js";
 import showRoute from "./show.route.js";
 import theatreRoute from "./theatre.route.js";
+import bookignRoute from "./booking.route.js";
 
 
 const rootRouter: Router = Router()
@@ -21,5 +22,6 @@ rootRouter.use('/screen', screenRoute);
 rootRouter.use('/seatType', seatTypeRoute);
 rootRouter.use('/show', showRoute);
 rootRouter.use('/theatre', theatreRoute);
+rootRouter.use('/book', bookignRoute)
 
 export default rootRouter;

@@ -3,70 +3,86 @@ import { prismaClient } from "../index.js";
 import { httpStatusCode } from "../utils/httpStatusCode.js";
 
 
-//create PENDING booking + bookingSeats (atomic)
 export const LockSeatBooking = async (req: Request, res: Response) => {
     try {
+        const { showId, userId, seatIds } = req.body;
 
-        const {
-            userId,
-            showId,
-            totalAmount,
-            paymentId,
-        } = req.body;
-
-        const {
-            bookingId,
-            seatId,
-            price,
-        } = req.body;
-
-
-        const newBooking = await prismaClient.booking.create({
-            data: {
-                userId,
-                showId,
-                totalAmount,
-                paymentId,
-            }
-        })
-
-
-
-        //create booking seat from selected seat
-        const newBookingSeat = await prismaClient.bookingSeat.create({
-            data: {
-                bookingId,
-                seatId,
-                price,
-                showId
-            }
-        })
-
-
-
-
-
-        return res.status(httpStatusCode.CREATED).json({
-            success: true,
-            message: "booking initialized",
-            data: { newBooking, newBookingSeat }
-        })
-
-
-    } catch (error: any) {
-
-        console.error("Error initializing booking:", error);
-        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
-            success: false,
-            message: error.message || "Server error while bookign",
+        const seatData = await prismaClient.seat.findMany({
+            where: { id: { in: seatIds } }
         });
 
+        if (!seatData.length) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({ success: false, message: "No seats found" });
+        }
+
+
+        const uniqueSeatTypeIds = [...new Set(seatData.map(s => s.seatTypeId))];
+        const prices = await prismaClient.price.findMany({
+            where: { showId, seatTypeId: { in: uniqueSeatTypeIds } }
+        });
+
+        if (!prices.length) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({ success: false, message: "Prices not found for these seats" });
+        }
+        const priceMap = prices.reduce((acc, p) => {
+            acc[p.seatTypeId] = p.price;
+            return acc;
+        }, {} as Record<number, number>);
+
+        const totalAmount = seatData.reduce((sum, seat) => sum + (priceMap[seat.seatTypeId] || 0), 0);
+
+        const initializeBooking = await prismaClient.booking.create({
+            data: {
+                showId,
+                userId,
+                totalAmount,
+                expiresAt: new Date(Date.now() + 5 * 60 * 1000) // 5 minutes from now
+            }
+        });
+
+        if (!initializeBooking) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "Booking initialization failed."
+            });
+        }
+
+        const bookingSeatData = seatData.map(seat => ({
+            bookingId: initializeBooking.id,
+            seatId: seat.id,
+            showId,
+            price: priceMap[seat.seatTypeId] ?? 0
+        }));
+
+        await prismaClient.bookingSeat.createMany({
+            data: bookingSeatData
+        });
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: "Booking initialized",
+            data: {
+                booking: initializeBooking,
+                seats: bookingSeatData
+            }
+        });
+
+    } catch (error: any) {
+        console.error("Error initializing booking:", error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Server error while booking"
+        });
     }
-}
+};
+
 
 //payment webhook + finalize booking
 export const ConfirmBooking = async (req: Request, res: Response) => {
     try {
+
+
+        
 
     } catch (error) {
 

@@ -140,9 +140,20 @@ export const deleteShow = async (req: Request, res: Response) => {
 
 export const showsDisplay = async (req: Request, res: Response) => {
     try {
+        console.log("helo");
+
         const shows = await prismaClient.show.findMany({
             include: {
-                screen: true,
+                screen: {
+                    include: {
+                        theatre: true,
+                        seats: {
+                            include: {
+                                seatType: true
+                            }
+                        }
+                    }
+                },
                 movie: true,
             }
         })

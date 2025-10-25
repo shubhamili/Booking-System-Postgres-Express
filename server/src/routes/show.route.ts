@@ -5,7 +5,7 @@ import { createShow, deleteShow, showsDisplay } from "../controllers/show.contro
 const showRoute: Router = Router();
 
 showRoute.post('/add', verifyToken, createShow);
-showRoute.get('/display', verifyToken, showsDisplay);
+showRoute.get('/display', showsDisplay);
 showRoute.delete('/delete', verifyToken, deleteShow);
 
 export default showRoute;

@@ -132,22 +132,32 @@ export const deleteSeat = async (req: Request, res: Response) => {
 
 
 //show availability (join seats vs bookingSeats where bookingStatus = BOOKED or PENDING)
-export const showSeats = async (req: Request, res: Response) => {
+export const displaySeats = async (req: Request, res: Response) => {
     try {
+        console.log("indise now");
 
-        const seats = await prismaClient.seat.findMany({
-            orderBy: { id: "asc" },
+        const { showId } = req.query;
+
+        // console.log("showId", showId);
+
+        const seatsForThisShow = await prismaClient.show.findUnique({
+            where: { id: Number(showId) },
             include: {
-                seatType: true
+                screen: {
+                    include: {
+                        seats: true
+                    }
+                }
             }
         });
-        console.log("seats all => ", seats);
+        // console.log("show", seatsForThisShow);
+
 
         return res.status(httpStatusCode.ACCEPTED).json(
             {
                 succes: true,
                 message: "find all the seats here..",
-                seats
+                seats: seatsForThisShow
 
             })
     } catch (error: any) {
