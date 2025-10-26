@@ -7,9 +7,24 @@ export const LockSeatBooking = async (req: Request, res: Response) => {
     try {
         const { showId, userId, seatIds } = req.body;
 
+
+
+
+        const DoesUserExist = await prismaClient.user.findUnique({
+            where: { id: userId }
+        })
+
+
+        if (!DoesUserExist) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({ success: false, message: "User do not exist" });
+        }
+
         const seatData = await prismaClient.seat.findMany({
             where: { id: { in: seatIds } }
         });
+
+
+
 
         if (!seatData.length) {
             return res.status(httpStatusCode["NOT FOUND"]).json({ success: false, message: "No seats found" });
@@ -30,6 +45,7 @@ export const LockSeatBooking = async (req: Request, res: Response) => {
         }, {} as Record<number, number>);
 
         const totalAmount = seatData.reduce((sum, seat) => sum + (priceMap[seat.seatTypeId] || 0), 0);
+        console.log("total amount", totalAmount);
 
         const initializeBooking = await prismaClient.booking.create({
             data: {
@@ -81,8 +97,12 @@ export const LockSeatBooking = async (req: Request, res: Response) => {
 export const ConfirmBooking = async (req: Request, res: Response) => {
     try {
 
+        const { bookingId } = req.body;
 
-        
+
+
+
+
 
     } catch (error) {
 

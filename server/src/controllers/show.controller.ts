@@ -142,7 +142,19 @@ export const showsDisplay = async (req: Request, res: Response) => {
     try {
         console.log("helo");
 
+        const { movieId } = req.query;
+
+        if (!movieId) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: 'no movieId provide',
+            });
+        }
+
         const shows = await prismaClient.show.findMany({
+            where: {
+                movieId: Number(movieId)
+            },
             include: {
                 screen: {
                     include: {
