@@ -44,7 +44,7 @@ model Theatre {
 
 model Screen {
   id        Int      @id @default(autoincrement())
-  theatre   Theatre  @relation(fields: [theatreId], references: [id], onDelete: Restrict)
+  theatre   Theatre  @relation(fields: [theatreId], references: [id], onDelete: Cascade)
   theatreId Int
   shows     Show[]
   seats     Seat[]
@@ -53,9 +53,9 @@ model Screen {
 
 model Show {
   id           Int           @id @default(autoincrement())
-  screen       Screen        @relation(fields: [screenId], references: [id], onDelete: Restrict)
+  screen       Screen        @relation(fields: [screenId], references: [id], onDelete: Cascade)
   screenId     Int
-  movie        Movie         @relation(fields: [movieId], references: [id], onDelete: Restrict)
+  movie        Movie         @relation(fields: [movieId], references: [id], onDelete: Cascade)
   movieId      Int
   prices       Price[]
   format       String // e.g., 2D, 3D, IMAX
@@ -70,9 +70,9 @@ model Seat {
   id         Int      @id @default(autoincrement())
   row        String
   number     Int
-  seatType   SeatType @relation(fields: [seatTypeId], references: [id], onDelete: Restrict)
+  seatType   SeatType @relation(fields: [seatTypeId], references: [id], onDelete: Cascade)
   seatTypeId Int
-  screen     Screen   @relation(fields: [screenId], references: [id], onDelete: Restrict)
+  screen     Screen   @relation(fields: [screenId], references: [id], onDelete: Cascade)
   screenId   Int
 
   bookingSeats BookingSeat[]
@@ -109,10 +109,10 @@ model Movie {
 model Price {
   id         Int      @id @default(autoincrement())
 
-  show       Show     @relation(fields: [showId], references: [id], onDelete: Restrict)
+  show       Show     @relation(fields: [showId], references: [id], onDelete: Cascade)
   showId     Int
   
-  seatType   SeatType @relation(fields: [seatTypeId], references: [id], onDelete: Restrict)
+  seatType   SeatType @relation(fields: [seatTypeId], references: [id], onDelete: Cascade)
   seatTypeId Int
 
   dayType  String // Weekday, Weekend (optional)
@@ -123,13 +123,13 @@ model Price {
 model BookingSeat {
   id Int @id @default(autoincrement())
 
-  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   bookingId Int
 
   seat   Seat @relation(fields: [seatId], references: [id])
   seatId Int
 
-  show   Show @relation(fields: [showId], references: [id], onDelete: Restrict)
+  show   Show @relation(fields: [showId], references: [id], onDelete: Cascade)
   showId Int
 
   price Int
@@ -155,7 +155,7 @@ model Booking {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 
-  show   Show @relation(fields: [showId], references: [id], onDelete: Restrict)
+  show   Show @relation(fields: [showId], references: [id], onDelete: Cascade)
   showId Int
 
   totalAmount   Int
