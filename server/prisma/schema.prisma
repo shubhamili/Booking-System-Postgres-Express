@@ -75,6 +75,7 @@ model Seat {
   screen     Screen   @relation(fields: [screenId], references: [id], onDelete: Cascade)
   screenId   Int
 
+  // isAvailable  Boolean       @default(true) // availability managed via BookingSeat : later 
   bookingSeats BookingSeat[]
 
   @@unique([screenId, row, number]) // unique seat per screen
@@ -107,11 +108,11 @@ model Movie {
 }
 
 model Price {
-  id         Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  show       Show     @relation(fields: [showId], references: [id], onDelete: Cascade)
-  showId     Int
-  
+  show   Show @relation(fields: [showId], references: [id], onDelete: Cascade)
+  showId Int
+
   seatType   SeatType @relation(fields: [seatTypeId], references: [id], onDelete: Cascade)
   seatTypeId Int
 
@@ -133,6 +134,8 @@ model BookingSeat {
   showId Int
 
   price Int
+
+  //  status String @default("ACTIVE") // ACTIVE | CANCELLED : later soft delete basially
 
   @@unique([seatId, showId])
 }

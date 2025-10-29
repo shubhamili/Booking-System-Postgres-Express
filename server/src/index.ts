@@ -5,6 +5,7 @@ import rootRouter from './routes/index.js'
 import { PrismaClient } from '@prisma/client'
 import cookieParser from 'cookie-parser'
 const app: Express = express()
+import morgan from "morgan";
 
 app.get("/", (req: Request, res: Response) => {
     res.send("app started")
@@ -14,8 +15,9 @@ app.get("/", (req: Request, res: Response) => {
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
+app.use(morgan("dev")); 
 
-// app.use('/api/admin', adminRoutes)
+
 app.use('/api', rootRouter);
 
 export const prismaClient = new PrismaClient({ log: ['query'] })

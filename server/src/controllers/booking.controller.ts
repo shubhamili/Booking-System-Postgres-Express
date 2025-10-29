@@ -131,8 +131,6 @@ export const LockSeatBooking = async (req: Request, res: Response) => {
 
         })
 
-
-
         return res.status(httpStatusCode.OK).json({
             success: true,
             message: "Seats locked successfully",
@@ -159,15 +157,66 @@ export const LockSeatBooking = async (req: Request, res: Response) => {
 };
 
 
-//payment webhook + finalize booking
+//payment webhook : pending will integrate when frontennd + finalize booking
 export const ConfirmBooking = async (req: Request, res: Response) => {
     try {
 
-        const { bookingId, userId } = req.body;
+        const { bookingId, userId, paymentId } = req.body;
+
+        if (!bookingId || !userId) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "bookingId, userId and paymentId are required"
+            });
+        }
+
+        const booking = await prismaClient.booking.findUnique({
+            where: { id: bookingId },
+            include: { bookingSeats: true }
+        })
+
+        if (!booking) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "Booking not found"
+            });
+        } else if (booking.userId !== userId) {
+            return res.status(httpStatusCode.UNAUTHORIZED).json({
+                success: false,
+                message: "You are not authorized to confirm this booking"
+            });
+        } else if (booking.bookingStatus === "BOOKED") {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: `Booking is already ${booking.bookingStatus}`
+            });
+        } else if (!booking.expiresAt || booking.expiresAt < new Date()) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "Booking has expired or invalid"
+            });
+        }
 
 
 
+        const updatedBooking = await prismaClient.booking.update({
+            where: { id: bookingId },
+            data: {
+                bookingStatus: "BOOKED",
+                paymentStatus: "SUCCESS",
+                bookedAt: new Date(),
+                paymentId,
 
+            }
+        });
+
+
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: "Booking confirmed successfully",
+            data: updatedBooking
+        });
 
 
     } catch (error: any) {
@@ -183,16 +232,132 @@ export const ConfirmBooking = async (req: Request, res: Response) => {
 export const cancelBooking = async (req: Request, res: Response) => {
     try {
 
-    } catch (error) {
+        const { bookingId, userId } = req.body
+        // Validate input
+        if (!bookingId || !userId) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({
+                success: false,
+                message: "bookingId and userId are required"
+            });
+        }
 
+        const booking = await prismaClient.booking.findUnique({
+            where: { id: bookingId },
+            include: { bookingSeats: true }
+        });
+
+        if (!booking) {
+            return res.status(httpStatusCode["NOT FOUND"]).json({
+                success: false,
+                message: "Booking not found"
+            });
+        }
+        else if (booking.userId !== userId) {
+            return res.status(httpStatusCode.UNAUTHORIZED).json({
+                success: false,
+                message: "You are not authorized to cancel this booking"
+            });
+        }
+
+        if (["CANCELLED", "EXPIRED"].includes(booking.paymentStatus)) {
+            return res.status(httpStatusCode["BAD REQUEST"]).json({ message: "Booking cannot be cancelled as its either canceled already or expired" });
+        }
+
+
+        const result = await prismaClient.$transaction(async (tx) => {
+
+            const canceledBooking = await tx.booking.update({
+                where: { id: bookingId },
+                data: {
+                    bookingStatus: "CANCELLED",
+                }
+            });
+
+            // Delete associated booking seats
+            await tx.bookingSeat.deleteMany({
+                where: { bookingId: bookingId }
+            });
+
+            return canceledBooking;
+
+
+
+        });
+
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: "Booking cancelled successfully",
+            data: result
+        });
+    } catch (error: any) {
+        console.error("Error cancelling booking:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            message: error.message || "Server error while cancelling booking"
+        });
     }
 }
 
-// user booking history
-export const userBookingHistory = async (req: Request, res: Response) => {
+
+
+export const viewBooking = async (req: Request, res: Response) => {
     try {
+        const { bookingId, userId } = req.query;
 
-    } catch (error) {
 
+        const booking = await prismaClient.booking.findUnique({
+            where: { id: Number(bookingId) },
+            include: { bookingSeats: true }
+        });
+        if (!booking || booking.userId !== Number(userId)) {
+            return res.status(httpStatusCode.UNAUTHORIZED).json({
+                success: false,
+                message: "You are not authorized to view this booking"
+            });
+        }
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: "Booking details fetched successfully",
+            data: booking
+        });
+
+    } catch (error: any) {
+        console.error("Error viewing booking:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            message: error.message || "Server error while fetching booking"
+        });
+    }
+}
+
+
+export const myBookings = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+
+        // const user = (req as any).user;
+        // console.log("users", user);
+
+
+        const bookings = await prismaClient.booking.findMany({
+            where: { userId: Number(userId) },
+            include: { bookingSeats: true }
+        });
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: "User bookings fetched successfully",
+            data: bookings
+        });
+
+
+    } catch (error: any) {
+        console.error("Error fetching user bookings:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            message: error.message || "Server error while fetching bookings"
+        });
     }
 }
