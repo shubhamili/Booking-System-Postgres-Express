@@ -28,7 +28,7 @@ const storage: StorageEngine = multer.diskStorage({
         cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
         console.log(file);
     },
-    
+
 });
 
 export const upload = multer({ storage });
