@@ -4,8 +4,15 @@ import adminRoutes from './routes/admin.route.js'
 import rootRouter from './routes/index.js'
 import { PrismaClient } from '@prisma/client'
 import cookieParser from 'cookie-parser'
-const app: Express = express()
 import morgan from "morgan";
+import { rateLimit } from 'express-rate-limit';
+import { basicLimiter } from './utils/rateLimiter.js'
+
+const app: Express = express()
+
+
+app.use(basicLimiter);
+
 
 app.get("/", (req: Request, res: Response) => {
     res.send("app started")
@@ -15,7 +22,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
-app.use(morgan("dev")); 
+app.use(morgan("dev"));
 
 
 app.use('/api', rootRouter);
