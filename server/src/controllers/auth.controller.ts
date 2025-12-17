@@ -102,7 +102,6 @@ export const login = async (req: Request, res: Response) => {
         });
 
 
-
         return res.status(httpStatusCode.OK).json({
             success: true, data: {
                 ...userWithoutPassword, token
