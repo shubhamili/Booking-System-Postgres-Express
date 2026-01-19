@@ -27,7 +27,8 @@ app.use(morgan("dev"));
 
 app.use('/api', rootRouter);
 
-export const prismaClient = new PrismaClient({ log: ['query'] })
+//this was old prisma setup code: 
+// export const prismaClient = new PrismaClient({ log: ['query'] })
 
 app.listen(config.port, () => console.log(`server started at port http://localhost:${config.port}`))
 

@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { prismaClient } from "../index.js";
 import { httpStatusCode } from "../utils/httpStatusCode.js";
+import { prismaClient } from "../lib/prisma.js";
 
 export const createPrice = async (req: Request, res: Response) => {
     try {
