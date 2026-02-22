@@ -118,3 +118,30 @@ export const login = async (req: Request, res: Response) => {
     }
 
 }
+
+
+
+export const me = async (req: Request, res: Response) => {
+    try {
+        const RequestUser = (req as any).user;
+        const user = await prismaClient.admin.findUnique({
+            where: { id: RequestUser.id }
+        })
+        // console.log('first', user)
+        return res.status(200).json(
+            {
+                success: true,
+                message: "user data fetched",
+                data: user
+            }
+        )
+    } catch (error: any) {
+        console.log('error', error)
+        return res.status(500).json(
+            {
+                success: false,
+                message: "Internal server error"
+            }
+        )
+    }
+}

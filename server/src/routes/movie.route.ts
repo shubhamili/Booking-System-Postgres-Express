@@ -5,8 +5,8 @@ import { upload } from "../middleware/multer.middleware.js";
 
 const movieRoute: Router = Router();
 
-movieRoute.post('/add', verifyToken,upload.single("poster"), addMovie);
-movieRoute.get('/get', verifyToken, getAllMovies);
+movieRoute.post('/add', verifyToken, upload.single("poster"), addMovie);
+movieRoute.get('/get', getAllMovies);
 movieRoute.get('/getById', verifyToken, getMovieById);
 movieRoute.delete('/delete', verifyToken, deleteMovie);
 movieRoute.put('/edit', verifyToken, editMovie);

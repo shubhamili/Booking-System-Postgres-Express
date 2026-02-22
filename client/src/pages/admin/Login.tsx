@@ -1,15 +1,20 @@
 import { useForm } from "react-hook-form"
-import { Label } from "../components/ui/label"
-import { Input } from "../components/ui/input"
-import { Button } from "../components/ui/button"
+import { Label } from "../../components/ui/label"
+import { Input } from "../../components/ui/input"
+import { Button } from "../../components/ui/button"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
-import { API_ENDPOINTS } from "../routes/apiEndpoints"
+import { API_ENDPOINTS } from "../../routes/apiEndpoints"
+import { useAppDispatch } from "../../store/hooks"
+import { setUser } from "../../store/slices/auth"
 
 type LoginFormInputs = {
     email: string
     password: string
 }
+
+
+
 
 const Login = () => {
     const {
@@ -17,6 +22,9 @@ const Login = () => {
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm<LoginFormInputs>()
+
+    const dispatch = useAppDispatch();
+
 
     const navigator = useNavigate()
 
@@ -37,7 +45,8 @@ const Login = () => {
 
             if (result.status === 200) {
                 alert("Login Successful 🚀")
-                navigator("/")
+                dispatch(setUser(result.data.data));
+                navigator("/admin/dashboard")
             }
         } catch (error) {
             console.error("Login failed:", error)

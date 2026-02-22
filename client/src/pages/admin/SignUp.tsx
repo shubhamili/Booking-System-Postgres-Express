@@ -1,10 +1,11 @@
 import { useForm } from "react-hook-form"
-import { Label } from "../components/ui/label"
-import { Input } from "../components/ui/input"
-import { Button } from "../components/ui/button"
+
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
-import { API_ENDPOINTS } from "../routes/apiEndpoints"
+import { API_ENDPOINTS } from "../../routes/apiEndpoints"
+import { Label } from "../../components/ui/label"
+import { Input } from "../../components/ui/input"
+import { Button } from "../../components/ui/button"
 
 type SignInFormInputs = {
     email: string

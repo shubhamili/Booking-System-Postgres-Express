@@ -20,13 +20,12 @@ app.use(basicLimiter);
 app.get("/", (req: Request, res: Response) => {
     res.send("app started")
 })
-
+app.use(morgan("dev"));
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan("dev"));
-// app.use(cors(origin: 'http://example.com',))
 
 
 const corsOptions = {
@@ -42,5 +41,5 @@ app.use('/api', rootRouter);
 //this was old prisma setup code: 
 // export const prismaClient = new PrismaClient({ log: ['query'] })
 
-app.listen(config.port, () => console.log(`server started at port http://localhost:${config.port}`))
+app.listen(config.port, () => console.log(`Server Started at port http://localhost:${config.port}`))
 
