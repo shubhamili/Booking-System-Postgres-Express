@@ -13,9 +13,6 @@ type LoginFormInputs = {
     password: string
 }
 
-
-
-
 const Login = () => {
     const {
         register,
