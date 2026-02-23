@@ -11,50 +11,55 @@ import {
 } from "../../../components/ui/table"
 import { Button } from "../../../components/ui/button"
 
-export interface Screen {
+export interface Theatre {
     id: number
-    theatreName: string
-    theatreLocation: string
+    name: string
+    location: string
+    createdAt: string
 }
 
-const ScreenPage = () => {
-    const [screens, setScreens] = useState<Screen[]>([])
+const TheatrePage = () => {
+    const [theatres, setTheatres] = useState<Theatre[]>([])
 
-    const fetchAllScreens = async () => {
-        const response = await axios.get(API_ENDPOINTS.getAllScreens, {
+    const fetchAllTheatres = async () => {
+        const response = await axios.get(API_ENDPOINTS.getAllTheatres, {
             withCredentials: true,
         })
 
-        setScreens(response.data.data)
+        setTheatres(response.data.data)
     }
 
     useEffect(() => {
-        fetchAllScreens()
+        fetchAllTheatres()
     }, [])
 
     return (
         <>
-            <div className="m-6 font-bold text-xl">Screen Page</div>
+            <div className="m-6 font-bold text-xl">Theatre Page</div>
 
             <div className="space-y-4">
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Screen Id</TableHead>
-                            <TableHead>Theatre Name</TableHead>
+                            <TableHead>Id</TableHead>
+                            <TableHead>Name</TableHead>
                             <TableHead>Location</TableHead>
+                            <TableHead>Created At</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 
                     <TableBody>
-                        {screens.map((screen) => (
-                            <TableRow key={screen.id}>
-                                <TableCell>{screen.id}</TableCell>
+                        {theatres.map((theatre) => (
+                            <TableRow key={theatre.id}>
+                                <TableCell>{theatre.id}</TableCell>
                                 <TableCell className="capitalize">
-                                    {screen.theatreName}
+                                    {theatre.name}
                                 </TableCell>
-                                <TableCell>{screen.theatreLocation}</TableCell>
+                                <TableCell>{theatre.location}</TableCell>
+                                <TableCell>
+                                    {new Date(theatre.createdAt).toLocaleString()}
+                                </TableCell>
                                 <TableCell className="text-right space-x-2">
                                     <Button size="sm" variant="outline">
                                         Edit
@@ -72,4 +77,4 @@ const ScreenPage = () => {
     )
 }
 
-export default ScreenPage
+export default TheatrePage

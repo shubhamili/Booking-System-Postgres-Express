@@ -197,3 +197,66 @@ export const showsDisplay = async (req: Request, res: Response) => {
 
     }
 }
+
+
+
+
+export const getAllShows = async (req: Request, res: Response) => {
+    try {
+
+        const shows = await prismaClient.show.findMany({
+            include: {
+                screen: {
+                    include: {
+                        theatre: true,
+                        seats: {
+                            include: {
+                                seatType: true
+                            }
+                        }
+                    }
+                },
+                movie: true,
+            }
+        })
+
+
+        const modified = shows.map(show => ({
+            id: show.id,
+            formate: show.format,
+            startTime: show.startTime,
+            endTime: show.endTime,
+            screenId: show.screen.id,
+            theatre: show.screen.theatre.name,
+            movie: show.movie.title
+        }));
+
+
+
+        if (modified.length === 0) {
+            return res.status(httpStatusCode["NO CONTENT"]).json({
+                success: false,
+                message: 'displaying all shows',
+                data: shows
+            });
+        }
+
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: 'displaying all shows',
+            data: modified
+        });
+
+
+
+    } catch (error: any) {
+        console.error("Error displaying show:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            error: error.message || "Internal Server Error",
+        });
+
+    }
+}
+

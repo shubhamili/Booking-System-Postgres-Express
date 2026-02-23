@@ -82,3 +82,52 @@ export const deleteScreen = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+
+
+
+export const getAllScreens = async (req: Request, res: Response) => {
+    try {
+
+        const screens = await prismaClient.screen.findMany({
+            include: { theatre: true }
+        })
+
+        const modified = screens.map(screen => ({
+            id: screen.id,
+            theatreName: screen.theatre.name,
+            theatreLocation: screen.theatre.location
+        }))
+
+
+
+
+
+        if (modified.length === 0) {
+            return res.status(httpStatusCode["NO CONTENT"]).json({
+                success: false,
+                message: 'displaying all screens',
+                data: screens
+            });
+        }
+
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: 'displaying all screens',
+            data: modified
+        });
+
+
+
+    } catch (error: any) {
+        console.error("Error displaying screens:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            error: error.message || "Internal Server Error",
+        });
+
+    }
+}
+

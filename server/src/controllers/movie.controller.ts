@@ -152,18 +152,18 @@ export const editMovie = async (req: Request, res: Response) => {
 export const getAllMovies = async (req: Request, res: Response) => {
     try {
         const movies = await prismaClient.movie.findMany({
-            orderBy: { createdAt: "desc" }, // optional: latest first
-            include: {
-                shows: {
-                    include: {
-                        screen: {
-                            include: {
-                                theatre: true,
-                            },
-                        },
-                    },
-                },
-            },
+            orderBy: { createdAt: "asc" }, // optional: latest first
+            // include: {
+            //     shows: {
+            //         include: {
+            //             screen: {
+            //                 include: {
+            //                     theatre: true,
+            //                 },
+            //             },
+            //         },
+            //     },
+            // },
         });
 
         if (!movies.length) {
@@ -173,10 +173,13 @@ export const getAllMovies = async (req: Request, res: Response) => {
             });
         }
 
+        const totalPages = Math.ceil((movies.length) / 10);
+
         return res.status(httpStatusCode["OK"]).json({
             success: true,
             message: "Movies fetched successfully",
             data: movies,
+            totalPages: totalPages
         });
     } catch (error: any) {
         console.error("Error in getting all movies:", error);

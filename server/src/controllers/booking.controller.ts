@@ -360,3 +360,53 @@ export const myBookings = async (req: Request, res: Response) => {
         });
     }
 }
+
+
+
+
+
+export const getAllBooking = async (req: Request, res: Response) => {
+    try {
+
+        const bookings = await prismaClient.booking.findMany({})
+
+
+        // const modified = shows.map(show => ({
+        //     id: show.id,
+        //     formate: show.format,
+        //     startTime: show.startTime,
+        //     endTime: show.endTime,
+        //     screenId: show.screen.id,
+        //     theatre: show.screen.theatre.name,
+        //     movie: show.movie.title
+        // }));
+
+
+
+        if (bookings.length === 0) {
+            return res.status(httpStatusCode["NO CONTENT"]).json({
+                success: false,
+                message: 'displaying all shows',
+                data: bookings
+            });
+        }
+
+
+        return res.status(httpStatusCode.OK).json({
+            success: true,
+            message: 'displaying all shows',
+            data: bookings
+        });
+
+
+
+    } catch (error: any) {
+        console.error("Error displaying show:", error);
+        return res.status(httpStatusCode["INTERNAL SERVER ERROR"]).json({
+            success: false,
+            error: error.message || "Internal Server Error",
+        });
+
+    }
+}
+
