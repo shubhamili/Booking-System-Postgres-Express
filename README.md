@@ -1,10 +1,10 @@
-# Movie Ticket Booking System (Backend)
+# Movie Ticket Booking System (full-stack)
 
 ## Project Overview
 
-This is a **backend system for a movie ticket booking platform**, designed to handle the complete flow of movie show bookings with seat selection, pricing, and payment integration. The project simulates real-world scenarios faced by platforms like BookMyShow, focusing on **user experience, data integrity, and concurrency handling**.
+This is a **System for a movie ticket booking platform**, designed to handle the complete flow of movie show bookings with seat selection, pricing, and payment integration. The project simulates real-world scenarios faced by platforms like BookMyShow, focusing on **user experience, data integrity, and concurrency handling**.
 
-The system is built using **Node.js, Express, PostgreSQL, and Prisma** as the ORM. Payment integration is designed using **Razorpay**.
+The system is built using **Node.js, Express, PostgreSQL, React, and Prisma** as the ORM. Payment integration is designed using **Razorpay**.
 
 ---
 
@@ -56,4 +56,4 @@ The system is built using **Node.js, Express, PostgreSQL, and Prisma** as the OR
 
 ---
 
-This project demonstrates my ability to **design a complex backend system**, solve real-world concurrency problems, and manage **multi-entity relationships** in a relational database using **Prisma and PostgreSQL**.
+This project demonstrates my ability to **design a complex system**, solve real-world concurrency problems, and manage **multi-entity relationships** in a relational database using **Prisma and PostgreSQL**.
