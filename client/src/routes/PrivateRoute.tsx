@@ -19,20 +19,21 @@
 
 
 
-import type { ReactNode } from 'react'
 import { useAppSelector } from '../store/hooks'
 import { Navigate } from 'react-router-dom'
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-    const { isAuthenticated, loading } = useAppSelector(
+    const { isAuthenticated, isAuthChecked, user } = useAppSelector(
         (state) => state.auth
     )
 
-    if (loading) {
-        return <div>Loading...</div> // or spinner
+    console.log("isAuthenticated, loading", isAuthenticated,);
+
+    if (!isAuthChecked) {
+        return <div>Loading...</div>
     }
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
         return <Navigate to="/admin/login" replace />
     }
 
