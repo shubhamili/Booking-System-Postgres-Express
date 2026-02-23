@@ -9,11 +9,11 @@ import AdminLayout from "../pages/admin/AdminLayout"
 import MoviePage from "../pages/admin/movie/MoviePage"
 import Price from "../pages/admin/price/Price"
 import Seat from "../pages/admin/seat/Seat"
-import SeatType from "../pages/admin/seatType/SeatType"
 import Theatre from "../pages/admin/theatre/Theatre"
 import ShowPage from "../pages/admin/shows/Shows"
 import ScreenPage from "../pages/admin/screen/Screen"
 import BookingPage from "../pages/admin/booking/Booking"
+import SeatTypePage from "../pages/admin/seatType/SeatType"
 
 const RoutingSetup = () => {
     return (
@@ -35,7 +35,7 @@ const RoutingSetup = () => {
                     <Route path="/admin/price" element={<Price />} />
                     <Route path="/admin/screen" element={<ScreenPage />} />
                     <Route path="/admin/seat" element={<Seat />} />
-                    <Route path="/admin/seatType" element={<SeatType />} />
+                    <Route path="/admin/seatType" element={<SeatTypePage />} />
                     <Route path="/admin/shows" element={<ShowPage />} />
                     <Route path="/admin/theatre" element={<Theatre />} />
                 </Route>
