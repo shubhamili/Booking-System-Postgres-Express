@@ -3,6 +3,7 @@ import { API_ENDPOINTS } from "../../../routes/apiEndpoints"
 import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table"
 import { Button } from "../../../components/ui/button"
+import { useNavigate } from "react-router-dom"
 
 export interface movie {
     id: number
@@ -26,9 +27,15 @@ const MoviePage = () => {
     useEffect(() => {
         fetchAllMovies()
     }, [page])
+
+    const navigate = useNavigate()
+
     return (
         <>
-            <div className="m-6 font-bold text-xl">MoviePage</div>
+            <div className="flex justify-between items-center">
+                <span className="m-6 font-bold text-xl">MoviePage</span>
+                <Button className="cursor-pointer" onClick={() => { navigate('/admin/movie/add') }}>Add Movie</Button>
+            </div>
             <div className="space-y-4">
                 <Table>
                     <TableHeader>

@@ -14,6 +14,7 @@ import ShowPage from "../pages/admin/shows/Shows"
 import ScreenPage from "../pages/admin/screen/Screen"
 import BookingPage from "../pages/admin/booking/Booking"
 import SeatTypePage from "../pages/admin/seatType/SeatType"
+import AddEditMovie from "../pages/admin/movie/AddEditMovie"
 
 const RoutingSetup = () => {
     return (
@@ -31,6 +32,8 @@ const RoutingSetup = () => {
                         }
                     />
                     <Route path="/admin/movie" element={<MoviePage />} />
+                    <Route path="/admin/movie/add" element={<AddEditMovie />} />
+                    <Route path="/admin/movie/edit" element={<AddEditMovie />} />
                     <Route path="/admin/booking" element={<BookingPage />} />
                     <Route path="/admin/price" element={<Price />} />
                     <Route path="/admin/screen" element={<ScreenPage />} />
